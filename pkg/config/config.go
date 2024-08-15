@@ -1,8 +1,8 @@
 package config
 
 import (
+	"html/template"
 	"log"
-	"text/template"
 )
 
 type AppConfig struct {
