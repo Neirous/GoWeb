@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Neirous/GoWeb/handlers"
+	"github.com/Neirous/GoWeb/pkg/handlers"
 )
 
 const portNumber = ":8080"
