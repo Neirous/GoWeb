@@ -13,24 +13,38 @@ import (
 const portNumber = ":8080"
 
 func main() {
+
+	//创建应用配置
 	var app config.AppConfig
-
-	tc, err := render.CreateTemplateCache()
-	if err != nil {
-		log.Fatal("cannot create template cache")
-	}
-
-	app.TemplateCache = tc
+	//UseCache为false时说明此时为开发者模式，每次运行都会重新解析模板
+	//置为true说明为生产模式，只有服务器启动时会解析一次，假如刷新网页
+	//并不会重新解析模板，只会从缓存中获取模板进行渲染
 	app.UseCache = false
 
-	repo := handlers.NewRepo(&app)
+	//创建模板缓存
+	tc, err := render.CreateTemplateCache()
+	if err != nil {
+		log.Fatal(err)
+	}
+	app.TemplateCache = tc
 
-	handlers.NewHandlers(repo)
+	//初始化模板渲染
 	render.NewTemplates(&app)
 
-	http.HandleFunc("/", handlers.Repo.Home)
-	http.HandleFunc("/about", handlers.Repo.About)
+	//创建存储库，并将应用配置传递给它
+	repo := handlers.NewRepo(&app)
+	//设置全局存储库
+	handlers.NewHandlers(repo)
 
-	fmt.Println(fmt.Sprintf("Starting application on port: %s", portNumber))
-	_ = http.ListenAndServe(portNumber, nil)
+	//启动HTTP服务
+	fmt.Printf(fmt.Sprintf("Starting application on port %s", portNumber))
+	if err != nil {
+		fmt.Println("Error starting server:", err)
+	}
+	serve := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
+	err = serve.ListenAndServe()
+	log.Fatal(err)
 }
