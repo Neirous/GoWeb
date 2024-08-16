@@ -20,6 +20,8 @@ func routes(app *config.AppConfig) http.Handler {
 	//Nosurf 用于防止 CSRF 攻击
 	mux.Use(Nosurf)
 
+	mux.Use(SessionLoad)
+
 	//HTTP请求处理
 	mux.Get("/", handlers.Repo.Home)
 	mux.Get("/about", handlers.Repo.About)

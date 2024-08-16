@@ -24,3 +24,8 @@ func Nosurf(next http.Handler) http.Handler {
 	// 返回设置好的 CSRF 处理器。
 	return csrfHandler
 }
+
+// Session lads and saves the session on every request
+func SessionLoad(next http.Handler) http.Handler {
+	return session.LoadAndSave(next)
+}

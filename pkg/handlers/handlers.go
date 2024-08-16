@@ -33,10 +33,13 @@ func NewHandlers(r *Repository) {
 // Home 处理器函数，用于处理首页请求
 // 它会创建一个字符串映射，并将其与模板数据一起传递给渲染函数
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
+	remoteIp := r.RemoteAddr
+	m.App.Session.Put(r.Context(), "remote_ip", remoteIp)
 
 	// 创建一个字符串映射
 	stringMap := make(map[string]string)
 	stringMap["test"] = "hello world"
+	stringMap["remote_ip"] = remoteIp
 
 	// 调用 RenderTemplate 函数渲染 home.page.tmpl 模板
 	render.RenderTemplate(w, "home.page.tmpl", "base", &models.TemplateData{
@@ -47,5 +50,13 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 // About 处理器函数，用于处理关于页面的请求
 // 这里不传递任何额外数据，只渲染 about.page.tmpl 模板
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "about.page.tmpl", "base", &models.TemplateData{})
+	remoteIp := m.App.Session.GetString(r.Context(), "remote_ip")
+	// 创建一个字符串映射
+	stringMap := make(map[string]string)
+	stringMap["test"] = "hello world"
+	stringMap["remote_ip"] = remoteIp
+	render.RenderTemplate(w, "about.page.tmpl", "base", &models.TemplateData{
+		StringMap: stringMap,
+	})
+
 }
